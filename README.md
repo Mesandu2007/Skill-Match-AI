@@ -136,24 +136,18 @@ Backend/
 └── server.js
 ```
 
----
+## Frontend Folder Structure
 
-# 📂 Frontend Folder Structure
-
+```bash
 FRONTEND/
-│
 ├── .vscode/
-│
 ├── node_modules/
-│
 ├── public/
 │   ├── favicon.svg
 │   └── icons.svg
 │
 ├── src/
-│   │
 │   ├── assets/
-│   │
 │   ├── components/
 │   │   ├── Footer.jsx
 │   │   └── Navbar.jsx
@@ -164,7 +158,77 @@ FRONTEND/
 │   │   ├── Login.jsx
 │   │   ├── ProjectDetails.jsx
 │   │   ├── Projects.jsx
-│   │ 
+│   │   └── Register.jsx
+│   │
+│   ├── services/
+│   │   └── api.js
+│   │
+│   ├── App.css
+│   └── App.jsx
+│
+└── README.md
+```
+
+## Backend Folder Structure
+
+```bash
+BACKEND/
+├── config/
+│   └── db.js
+│
+├── controllers/
+│   ├── analysisController.js
+│   ├── authController.js
+│   ├── candidateController.js
+│   ├── dashboardController.js
+│   ├── githubController.js
+│   └── projectController.js
+│
+├── middleware/
+│   └── authMiddleware.js
+│
+├── models/
+│   ├── Project.js
+│   └── User.js
+│
+├── node_modules/
+│
+├── routes/
+│   ├── authRoutes.js
+│   ├── candidateRoutes.js
+│   ├── dashboardRoutes.js
+│   ├── githubRoutes.js
+│   └── projectRoutes.js
+│
+├── services/
+│   ├── githubService.js
+│   ├── groqService.js
+│   └── rankingService.js
+│
+├── .env
+├── .gitignore
+└── app.js
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 🔗 API Endpoints
 
@@ -266,31 +330,6 @@ GITHUB_TOKEN=
 VITE_API_URL=
 ```
 
----
-
-# 📸 Screenshots
-
-### Login Page
-
-(Add Screenshot)
-
-### Dashboard
-
-(Add Screenshot)
-
-### Projects
-
-(Add Screenshot)
-
-### Project Details
-
-(Add Screenshot)
-
-### GitHub Visualizer
-
-(Add Screenshot)
-
----
 
 # 🚀 Future Improvements
 
@@ -307,13 +346,8 @@ VITE_API_URL=
 
 # 👨‍💻 Author
 
-**Your Name**
-
-* GitHub: https://github.com/yourusername
-* LinkedIn: https://linkedin.com/in/yourprofile
+Mesandu Gunawardhana
 
 ---
 
-# ⭐ Support
 
-If you like this project, please give it a ⭐ on GitHub!
