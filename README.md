@@ -164,17 +164,7 @@ FRONTEND/
 │   │   ├── Login.jsx
 │   │   ├── ProjectDetails.jsx
 │   │   ├── Projects.jsx
-│   │   └── Register.jsx
-│   │
-│   ├── services/
-│   │   └── api.js
-│   │
-│   ├── App.css
-│   └── App.jsx
-│
-└── README.md
-
----
+│   │ 
 
 # 🔗 API Endpoints
 
