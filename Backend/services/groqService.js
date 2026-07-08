@@ -13,6 +13,9 @@ CANDIDATE DATA:
 Languages:
 ${JSON.stringify(github.languages)}
 
+Frameworks:
+${JSON.stringify(github.frameworks)}
+
 Top Repositories (TOP 20 ONLY):
 ${JSON.stringify(
   (github.topRepos || []).slice(0, 20).map(repo => ({

@@ -45,6 +45,21 @@ export const getGithubProfile = async (username) => {
     const profile = profileRes.data;
     const repos = reposRes.data;
 
+    const frameworkKeywords = {
+      "react": ["react", "reactjs", "nextjs", "next.js"],
+      "angular": ["angular", "angularjs"],
+      "vue": ["vue", "vuejs"],
+      "node.js": ["node", "nodejs", "express", "nestjs", "koa"],
+      "spring boot": ["spring-boot", "spring"],
+      "django": ["django"],
+      "flask": ["flask"],
+      "fastapi": ["fastapi"],
+      "ruby on rails": ["rails"],
+      "laravel": ["laravel"],
+    };
+
+    const detectedFrameworks = {};
+
     const reposWithReadmes = await Promise.all(
       repos.map(async (repo) => ({
         ...repo,
@@ -66,6 +81,20 @@ export const getGithubProfile = async (username) => {
       repo.topics?.forEach((topic) => {
         languages[topic] =
           (languages[topic] || 0) + 0.5;
+      });
+
+      const content = `${repo.description || ""} ${repo.readme || ""}`.toLowerCase();
+      const repoTopics = (repo.topics || []).map(t => t.toLowerCase());
+
+      Object.entries(frameworkKeywords).forEach(([framework, keywords]) => {
+        for (const keyword of keywords) {
+          if (repoTopics.includes(keyword) || content.includes(keyword)) {
+            detectedFrameworks[framework] = (detectedFrameworks[framework] || 0) + 1;
+            // Once a framework is detected for a repo from one of its keywords,
+            // we can stop checking other keywords for the same framework in the same repo.
+            break; 
+          }
+        }
       });
     });
 
@@ -104,6 +133,7 @@ export const getGithubProfile = async (username) => {
       },
 
       languages,
+      frameworks: detectedFrameworks,
       topRepos,
       activity,
 
@@ -125,6 +155,7 @@ export const getGithubProfile = async (username) => {
     return {
       profile: { username },
       languages: {},
+      frameworks: {},
       topRepos: [],
       activity: {},
       allRepos: [],

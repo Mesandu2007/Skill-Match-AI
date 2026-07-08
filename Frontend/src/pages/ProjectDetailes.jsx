@@ -543,8 +543,8 @@ export const ProjectDetails = () => {
                           <td className="py-4 text-blue-400">
                             {
                               candidate
-                                .analysis
-                                .verdict
+                                ?.analysis
+                                ?.verdict || "N/A"
                             }
                           </td>
                         </tr>
@@ -589,16 +589,16 @@ export const ProjectDetails = () => {
                     <p className="text-blue-400 mt-4 font-semibold">
                       {
                         candidate
-                          .analysis
-                          .verdict
+                          ?.analysis
+                          ?.verdict || "No verdict"
                       }
                     </p>
 
                     <p className="text-gray-300 mt-5">
                       {
                         candidate
-                          .analysis
-                          .summary
+                          ?.analysis
+                          ?.summary || "No summary available."
                       }
                     </p>
 
@@ -608,7 +608,7 @@ export const ProjectDetails = () => {
                       </h3>
 
                       <ul className="space-y-2">
-                        {candidate.analysis.strengths.map(
+                        {candidate.analysis?.strengths?.map(
                           (
                             strength,
                             i
@@ -635,7 +635,7 @@ export const ProjectDetails = () => {
                       </h3>
 
                       <ul className="space-y-2">
-                        {candidate.analysis.gaps.map(
+                        {candidate.analysis?.gaps?.map(
                           (
                             gap,
                             i

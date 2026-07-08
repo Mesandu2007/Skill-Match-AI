@@ -18,9 +18,12 @@ export const runAnalysis = async (req, res, next) => {
 
     const analysisPromises = project.candidates.map(async (candidate) => {
       try {
-        const username = new URL(candidate.githubUrl).pathname
-          .split("/")
-          .filter(Boolean)[0];
+        // Robustly extract username from URL or username field
+        let username = (candidate.username || "").split("/").pop();
+        if (!username) {
+          const decodedUrl = (candidate.githubUrl || "").replace(/&lt;|&gt;/g, "");
+          username = new URL(decodedUrl).pathname.split("/").filter(Boolean).pop();
+        }
 
         if (!username) throw new Error("Invalid GitHub URL");
 

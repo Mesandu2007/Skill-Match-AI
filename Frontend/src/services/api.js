@@ -1,8 +1,6 @@
 import axios from "axios";
 
-/* ========================= 
-   BASE INSTANCE
-========================= */
+
 
 const API = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -10,9 +8,7 @@ const API = axios.create({
 
 export default API;
 
-/* =========================
-   TOKEN ATTACHMENT
-========================= */
+
 
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
@@ -24,19 +20,14 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-/* =========================
-   ERROR HANDLING
-========================= */
+
 
 API.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log the error for debugging purposes
     console.error("API Error:", error.response?.data || error.message);
 
-    // We can format a more consistent error object here if we want,
-    // but for now, we'll just re-throw the original Axios error.
-    // The component's catch block will handle it.
+   
     return Promise.reject(error);
   }
 );

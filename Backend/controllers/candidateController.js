@@ -1,5 +1,9 @@
 import { Project } from "../models/Project.js";
 
+const extractUsernameFromUrl = (input) => {
+  if (!input) return null;
+  return input.split("/").pop();
+};
 
 export const addCandidate = async (req, res) => {
   try {
@@ -23,12 +27,14 @@ export const addCandidate = async (req, res) => {
       });
     }
 
-    const githubUrl = `<https://github.com/${username}>`;
+    const cleanUsername = extractUsernameFromUrl(username);
+
+    const githubUrl = `https://github.com/${cleanUsername}`;
 
     const candidate = {
       name,
       githubUrl,
-      username,
+      username: cleanUsername,
       githubData: null,
       analysis: null,
       score: 0,
@@ -149,9 +155,10 @@ export const updateCandidate = async (req, res) => {
     }
 
     // Update fields and reconstruct the githubUrl to stay consistent
+    const cleanUsername = extractUsernameFromUrl(username);
     candidate.name = name;
-    candidate.username = username;
-    candidate.githubUrl = `<https://github.com/${username}>`;
+    candidate.username = cleanUsername;
+    candidate.githubUrl = `https://github.com/${cleanUsername}`;
 
     await project.save();
 
