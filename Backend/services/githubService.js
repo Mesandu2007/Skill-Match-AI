@@ -29,9 +29,30 @@ const fetchReadme = async (username, repoName) => {
   }
 };
 
+const fetchRepoCommits = async (username, repoName) => {
+  try {
+    // Fetch the last 5 commits for a quick overview
+    const response = await axios.get(
+      `https://api.github.com/repos/${username}/${repoName}/commits?author=${username}&per_page=5`,
+      { headers: getHeaders() }
+    );
+    return response.data.map((c) => ({
+      sha: c.sha,
+      message: c.commit.message,
+      date: c.commit.author.date,
+    }));
+  } catch (error) {
+    // A 409 conflict can occur for empty repos, which is fine.
+    if (error.response && error.response.status !== 409) {
+      console.error(`Could not fetch commits for ${username}/${repoName}: ${error.message}`);
+    }
+    return [];
+  }
+};
+
 export const getGithubProfile = async (username) => {
   try {
-    const [profileRes, reposRes] = await Promise.all([
+    const [profileRes, reposRes, eventsRes] = await Promise.all([
       axios.get(
         `https://api.github.com/users/${username}`,
         { headers: getHeaders() }
@@ -40,6 +61,7 @@ export const getGithubProfile = async (username) => {
         `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`,
         { headers: getTopicsHeaders() }
       ),
+      axios.get(`https://api.github.com/users/${username}/events?per_page=100`, { headers: getHeaders() }),
     ]);
 
     const profile = profileRes.data;
@@ -107,12 +129,21 @@ export const getGithubProfile = async (username) => {
       .slice(0, 20);
 
     const activity = {};
+    let totalCommits = 0;
+
+    // Calculate total commits from push events in the last 90 days
+    eventsRes.data.forEach(event => {
+      if (event.type === 'PushEvent' && event.payload.commits) {
+        totalCommits += event.payload.commits.length;
+      }
+    });
 
     reposWithReadmes.forEach((repo) => {
       const month =
         repo.updated_at?.substring(0, 7);
 
       if (month) {
+        // This tracks repo updates, not necessarily commits
         activity[month] =
           (activity[month] || 0) + 1;
       }
@@ -134,11 +165,20 @@ export const getGithubProfile = async (username) => {
 
       languages,
       frameworks: detectedFrameworks,
-      topRepos,
+      topRepos: await Promise.all(
+        topRepos.map(async (repo) => ({
+          ...repo,
+          recent_commits: await fetchRepoCommits(username, repo.name),
+        }))
+      ),
       activity,
+      contributions: {
+        total_commits_90_days: totalCommits,
+      },
 
       allRepos: reposWithReadmes.map((repo) => ({
         name: repo.name,
+       
         description: repo.description,
         language: repo.language,
         topics: repo.topics || [],
@@ -158,6 +198,7 @@ export const getGithubProfile = async (username) => {
       frameworks: {},
       topRepos: [],
       activity: {},
+      contributions: {},
       allRepos: [],
       error: "Failed to fetch profile",
     };

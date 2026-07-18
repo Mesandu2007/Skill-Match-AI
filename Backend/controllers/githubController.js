@@ -56,27 +56,3 @@ export const analyzeGitHubOnly = async (req, res, next) => {
     next(error);
   }
 };
-
-export const getGithubProfileOverview = async (req, res, next) => {
-  try {
-    const { githubUrl } = req.body;
-
-    if (!githubUrl || typeof githubUrl !== "string") {
-      return res
-        .status(400)
-        .json({ message: "A valid githubUrl in the request body is required." });
-    }
-
-    const username = githubUrl.split("/").pop();
-    if (!username) {
-      return res
-        .status(400)
-        .json({ message: "Could not extract username from the provided URL." });
-    }
-
-    const data = await getGithubProfile(username);
-    res.json(data);
-  } catch (error) {
-    next(error);
-  }
-};

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
-import { previewGitHub, getGithubOverview } from "../services/api";
+import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import { previewGitHub } from "../services/api";
 
 import Navbar from "../components/Navbar";
 import { Footer } from "../components/Footer";
@@ -9,29 +9,10 @@ import { Footer } from "../components/Footer";
 export const GitHubVisualizer = () => {
   const [githubUrl, setGithubUrl] = useState("");
   const [data, setData] = useState(null);
-  const [overview, setOverview] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // MOVE THESE HERE
   const [openReadme, setOpenReadme] = useState(null);
-  const [showScroll, setShowScroll] = useState(false);
-
-  useEffect(() => {
-    const checkScrollTop = () => {
-      if (!showScroll && window.pageYOffset > 400) {
-        setShowScroll(true);
-      } else if (showScroll && window.pageYOffset <= 400) {
-        setShowScroll(false);
-      }
-    };
-
-    window.addEventListener("scroll", checkScrollTop);
-
-    return () => {
-      window.removeEventListener("scroll", checkScrollTop);
-    };
-  }, [showScroll]);
 
   const handleVisualize = async (e) => {
     e.preventDefault();
@@ -40,11 +21,7 @@ export const GitHubVisualizer = () => {
 
     try {
       const res = await previewGitHub({ githubUrl });
-    
-      setOverview("Loading overview...");
       setData(res.data);
-      const overviewRes = await getGithubOverview({ githubUrl });
-      setOverview(overviewRes.data.overview);
     } catch (err) {
       if (err.response) {
         if (err.response.status === 500) {
@@ -57,7 +34,6 @@ export const GitHubVisualizer = () => {
           );
         }
       } else {
-        setOverview("Failed to load overview.");
         setError(
           "Failed to fetch GitHub data. Please check your network connection and the URL, then try again."
         );
@@ -103,18 +79,15 @@ export const GitHubVisualizer = () => {
     );
   }
 
-  const { profile, languages, topRepos } = data;
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  const { profile, languages, topRepos, frameworks } = data;
 
   const COLORS = ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#06B6D4"];
 
   const langData = Object.entries(languages || {}).map(([name, value]) => ({
+    name,
+    value,
+  }));
+  const frameworkData = Object.entries(frameworks || {}).map(([name, value]) => ({
     name,
     value,
   }));
@@ -207,14 +180,26 @@ export const GitHubVisualizer = () => {
             </div>
           </div>
 
-          <div className="bg-gray-900 p-4 rounded-xl">
+          <div className="bg-gray-900 p-4 rounded-xl overflow-x-auto">
             <h2 className="text-lg font-semibold mb-3">
-              Overview
+              Framework Distribution
             </h2>
-
-            <p className="text-gray-400 text-sm leading-relaxed">
-              {overview}
-            </p>
+            <div className="flex justify-center" style={{ height: 240 }}>
+              <PieChart width={300} height={240}>
+                <Pie
+                  data={frameworkData}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={90}
+                >
+                  {frameworkData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend wrapperStyle={{ overflowY: 'auto', maxHeight: 240 }} />
+              </PieChart>
+            </div>
           </div>
         </div>
 
@@ -309,6 +294,23 @@ export const GitHubVisualizer = () => {
           })}
         </div>
 
+        <h2 className="text-xl font-bold mt-8 mb-4">
+          Recent Commits
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {topRepos.map((repo) => (
+            <div key={repo.id} className="bg-gray-900 p-4 rounded-xl">
+              <h3 className="text-lg font-semibold break-words mb-2">{repo.name}</h3>
+              <ul className="space-y-2">
+                {(repo.recent_commits || []).slice(0, 5).map((commit) => (
+                  <li key={commit.sha} className="text-xs text-gray-400 truncate" title={commit.message}>
+                    - {commit.message.split('\n')[0]}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </main>
     </div>  
 

@@ -72,8 +72,7 @@ export const deleteCandidate = (projectId, candidateId) =>
 export const previewGitHub = (data) =>
   API.post("/github/preview", data);
 
-export const getGithubOverview = (payload) =>
-  API.post("/github/overview", payload);
+
 
 export const analyzeGitHub = (data) =>
   API.post("/github/analyze", data);
