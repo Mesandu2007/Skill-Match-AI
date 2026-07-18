@@ -118,23 +118,6 @@ GitHub API
 AI Analysis Engine
 ```
 
----
-
-# 📂 Backend Folder Structure
-
-```text
-Backend/
-│
-├── controllers/
-├── middleware/
-├── models/
-├── routes/
-├── services/
-├── utils/
-├── .env
-├── package.json
-└── server.js
-```
 
 ## Frontend Folder Structure
 
